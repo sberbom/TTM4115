@@ -45,12 +45,33 @@ class App extends Component {
     //add functionality
     const display = this.state.displayText
     console.log("Let inn \nDisplay text: " + display)
+    
+    // POST to server
+    this.postToServer(true)
+    
+  }
+  
+  postToServer = (letIn) => {
+    // TODO: find correct IP address
+    fetch("127.0.0.1", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        openDoor: letIn,
+        message: this.state.displayText
+      })
+    })
   }
 
   onKeepClose = () => {
     //add functionality
     const display = this.state.displayText
     console.log("Keep close \nDisplay text: " + display)
+    
+    // POST to server
+    this.postToServer(false)
   }
 
   render() {
@@ -82,13 +103,13 @@ class App extends Component {
                 className="button" 
                 color="success"
                 onClick={this.onLetIn}>
-                  Let inn
+                  Open
               </Button>
               <Button 
                 className="button" 
                 color="danger"
                 onClick={this.onKeepClose}>
-                  Keep the door closed
+                  Decline
               </Button>
             </div>
           </div>
