@@ -11,8 +11,7 @@ class Signin extends React.Component {
     }
     
     submit = () => {
-        console.log(this.state.userName + '\n' + this.state.password);
-        this.props.onSignIn();
+        this.props.onSignIn(this.state.userName, this.state.password);
     }
 
     onUsernameChange = (event) => {
@@ -33,7 +32,7 @@ class Signin extends React.Component {
                 </InputGroup>
                 <InputGroup>
                     <InputGroupAddon addonType="prepend">**</InputGroupAddon>
-                    <Input onChange={this.onPasswordChange} placeholder="password" />
+                    <Input type="password" onChange={this.onPasswordChange} placeholder="password" />
                 </InputGroup>
                 <ButtonGroup>
                     <button color="primary" onClick={() => this.submit()}>

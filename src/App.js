@@ -3,6 +3,7 @@ import './App.css';
 import Navbar from './components/navbar/navbar';
 import Signin from './components/signin/signin';
 import { Button, FormGroup, Label, Input } from 'reactstrap';
+var base64ToImage = require('base64-to-image');
 
 //TODO
 //Need screen for register user
@@ -18,14 +19,31 @@ class App extends Component {
       user:{
         name:{}
       },
-      displayText: "Welcome"
+      displayText: "Welcome",
+      userdb:[
+        { name: "Admin", password: "Admin"},
+        { name: "Trygve", password: "Trygve"},
+        { name: "Håkon", password: "Håkon"},
+        { name: "Mathani", password: "Mathani"},
+        { name: "Hanne", password: "Hanne"},
+        { name: "Sigmund", password: "Sigmund"}
+      ],
+      picture: "",
+      pictureID:""
     }
   }
 
-  onSignIn = (username) => {
-    //make sure the user is confirmed
-    this.setState({isSignedIn: true,
-    user: {name :username}})
+
+  onSignIn = (username, password) => {
+    for(var i=0; i < this.state.userdb.length; i++){
+      if(this.state.userdb[i].name===username &&
+        this.state.userdb[i].password===password){
+          this.setState({isSignedIn: true,
+            user: {name :username}})
+            return;
+        }
+      }
+    
   }
 
   onSignOut = () => {
@@ -42,18 +60,21 @@ class App extends Component {
   }
 
   onLetIn = () => {
-    //add functionality
-    const display = this.state.displayText
-    console.log("Let inn \nDisplay text: " + display)
-    
-    // POST to server
-    this.postToServer(true)
-    
+    console.log("Letin");
+    fetch("http://localhost:3000/open", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: this.state.displayText
+      }) 
+    })
   }
   
   postToServer = (letIn) => {
     // TODO: find correct IP address
-    fetch("127.0.0.1", {
+    fetch("129.241.209.231", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -72,6 +93,32 @@ class App extends Component {
     
     // POST to server
     this.postToServer(false)
+  }
+
+  putTogetherBase64 = (part) => {
+    var partSplit = JSON.parse(part)
+    var newData = this.state.picture + partSplit.data;
+    if(this.state.pictureID===""){
+      this.setState({pictureID: partSplit.pic_id,
+                    picture: newData})
+    } 
+    else if(this.state.pictureID===partSplit.pic_id){
+      this.setState({pictureID: partSplit.pic_id,
+                    picture: newData})
+    } 
+    else {
+      this.setState({pictureID: partSplit.pic_id,
+                      picture: partSplit.data})
+    }
+  }
+
+  convertToImage = () => {
+    var base64Str =`iVBORw0KGgoAAAANSUhEUgAAAAUA
+    AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
+        9TXL0Y4OHwAAAABJRU5ErkJggg==`
+    var path = 'C:/Users/Google DriveSkole/NTNU/4. semester/Design av kommuniserende systemer/T3/App/app_frontend/src/'
+    var optionalObj = {'fileName': 'picture', 'type':'png'};
+    base64ToImage(base64Str,path,optionalObj); 
   }
 
   render() {
