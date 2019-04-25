@@ -72,6 +72,21 @@ class App extends Component {
     })
   }
   
+  onKeepClose = () => {
+    console.log("KeepClose");
+    fetch("http://localhost:3000/close", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: this.state.displayText
+      }) 
+    })
+  }
+
+  //DO we need this method??
+  /*
   postToServer = (letIn) => {
     // TODO: find correct IP address
     fetch("129.241.209.231", {
@@ -85,15 +100,9 @@ class App extends Component {
       })
     })
   }
+*/
 
-  onKeepClose = () => {
-    //add functionality
-    const display = this.state.displayText
-    console.log("Keep close \nDisplay text: " + display)
-    
-    // POST to server
-    this.postToServer(false)
-  }
+  
 
   putTogetherBase64 = (part) => {
     var partSplit = JSON.parse(part)
