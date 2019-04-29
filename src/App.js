@@ -3,6 +3,7 @@ import './App.css';
 import Navbar from './components/navbar/navbar';
 import Signin from './components/signin/signin';
 import { Button, FormGroup, Label, Input } from 'reactstrap';
+import socketIOClient from "socket.io-client";
 
 //TODO
 //Need screen for register user
@@ -30,6 +31,14 @@ class App extends Component {
     }
   }
 
+  componentDidMount() {
+    const socket = socketIOClient('ws://localhost:4000');
+    socket.on('mqtt', data => {
+      let string = data.payload
+      string = string.slice(2,-2)
+      this.setState({picture: string})
+    }) // this.setState({picture: data.payload})
+  }
 
   onSignIn = (username, password) => {
     for(var i=0; i < this.state.userdb.length; i++){
@@ -40,7 +49,7 @@ class App extends Component {
             return;
         }
       }
-    
+
   }
 
   onSignOut = () => {
@@ -57,24 +66,24 @@ class App extends Component {
   }
 
   getImage = () => {
-    fetch('http://localhost:3000/image')
+    fetch('http://localhost:4000/image')
       .then(response => response.json())
       .then(data => this.setState({picture:data}))
   }
 
   onLetIn = () => {
     console.log("Letin");
-    fetch("http://localhost:3000/open", {
+    fetch("http://localhost:4000/open", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         message: this.state.displayText
-      }) 
+      })
     })
   }
-  
+
   onKeepClose = () => {
     console.log("KeepClose");
     if(this.state.displayText==="Welcome"){
@@ -85,62 +94,62 @@ class App extends Component {
       },
       body: JSON.stringify({
         message: "Closed"
-      }) 
+      })
     })
     }
     else{
-      fetch("http://localhost:3000/close", {
+      fetch("http://localhost:4000/close", {
       method: "POST",
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         message: this.state.displayText
-      }) 
+      })
     })
     }
-    
+
   }
 
   render() {
     return (
       <div>
-        <Navbar 
+        <Navbar
         isSignedIn={this.state.isSignedIn}
         onSignOut={this.onSignOut}/>
-       {this.state.isSignedIn===false && 
+       {this.state.isSignedIn===false &&
           <Signin
           onSignIn={this.onSignIn}/>
         }
 
-        {this.state.isSignedIn===true && 
+        {this.state.isSignedIn===true &&
           <div>
             <img className="doorImg" src={`data:image/png;base64, ${this.state.picture}`}  alt="who is on the door)"/>
             <FormGroup className="input">
               <Label>Display text: </Label>
-              <Input type="textarea" 
-                name="text" 
+              <Input type="textarea"
+                name="text"
                 id="exampleText"
-                value={this.state.displayText} 
+                value={this.state.displayText}
                 onChange={this.onChange}
-                onClick={this.onClick} 
+                onClick={this.onClick}
                 />
             </FormGroup>
             <div className="buttons">
-              <Button 
-                className="button" 
+              <Button
+                className="button"
                 color="success"
                 onClick={this.onLetIn}>
                   Open
               </Button>
-              <Button 
-                className="button" 
+              <Button
+                className="button"
                 color="danger"
                 onClick={this.onKeepClose}>
                   Decline
               </Button>
-              <Button 
-                className="button" 
+              <Button
+                className="button"
                 color="info"
                 onClick={this.getImage}>
                   Get Image
